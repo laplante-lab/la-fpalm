@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include<device_launch_parameters.h>
-#include<device_functions.h>
+//#include<device_functions.h>
 #include<math.h>
 
 // inverse matrix with back substitute method

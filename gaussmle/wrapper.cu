@@ -7,7 +7,7 @@
  */
 #include "definitions.h"
 #include<device_launch_parameters.h>
-#include<device_functions.h>
+//#include<device_functions.h>
 
 cudaStream_t stream2;
 

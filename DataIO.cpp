@@ -243,16 +243,19 @@ static int tiff_raster2file(char filename[], uint32 *raster, uint32 nrow, uint32
           rasterbase++;
         }
         if (TIFFWriteScanline(tif, tmpStorage, i, 0) != 1) {
+          free(tmpStorage);
           fprintf(stderr, "Unable to write scanline %d\n", i);
           return(-1);
         }
       }
 
+      free(tmpStorage);
       TIFFClose(tif);
       return(0);
     }
     else {
       TIFFClose(tif);
+      free(tmpStorage);
       fprintf(stderr, "image is NULL\n");
       return(-1);
     }
@@ -293,7 +296,7 @@ static void rotateMatrix(double *mat, int N) {
 
 void writeImage(const char* filename, double* r, double* g, double* b, uint32_t width, uint32_t height) {
 
-  uint32* raster = (uint32*)malloc(width*height * sizeof(uint32*));
+  uint32_t* raster = (uint32_t*)malloc(width*height * sizeof(uint32_t));
   unsigned char* color = (unsigned char*)malloc(3 * sizeof(unsigned char));
 
   rotateMatrix(r, height);
@@ -314,7 +317,8 @@ void writeImage(const char* filename, double* r, double* g, double* b, uint32_t 
     }
   }
 
-  //MAKE THIS CLEANER
   tiff_raster2file((char*)filename, raster, width, height);
+  free(raster);
+  free(color);
 }
 

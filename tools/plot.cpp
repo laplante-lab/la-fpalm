@@ -450,6 +450,11 @@ void plot( const char* output_path, SRscmos *sr ) {
   (void) pthread_join( threads[2], NULL );
   (void) pthread_join( threads[3], NULL );
 
+  free(bg_data);
+  free(pho_data);
+  free(implot_data);
+  free(cer_data);
+
   //rc = pthread_create( &threads[0], NULL, &plotFrequencyEmissionsBg, (void *)&thread_data[0] );
 
   //plotFrequencyEmissionsBg( "output/bg.png", sr->bgtot, sr->total_size, "bg", "Background", 1 );

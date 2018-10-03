@@ -44,11 +44,6 @@ float* cMakeSubregions( double *x, double *y, double *z, int num_regions, int sz
 
   int N = num_regions;
 
-//  int szinX = 253;
-//  int szinY = 253;
-//  int szinZ = 1000; 
-  printf("%d %d %d\n", szinX, szinY, szinZ);
-
   for (ii=0;ii<N;ii++)
     getbox(data,ii,sz,szinX,szinY,szinZ,X,Y,Z,dataout,leftcoord,topcoord);
 
@@ -83,7 +78,7 @@ const int szinZ,const double *X,const double *Y,const double *Z, float* dataout,
 
 //#ifdef _DEBUG
   // x and y get +1 so they can = szin
-  if (x<1 || y<1 || z<0 || x>szinX || y>szinY || z>=szinZ) {
+  if (x<1 || y<1 || z<0 || x>szinX || y>szinY || z>szinZ) {
     printf("Point %d out of bounds position %d,%d,%d dataset size %d,%d,%d\n",ii,x,y,z,szinX, szinY, szinZ);
     //static char msgbuf[256];
     //sprintf(msgbuf,"Point %d out of bounds position %d,%d,%d dataset size %d,%d,%d",ii,x,y,z,szinX, szinY, szinZ);
@@ -93,7 +88,7 @@ const int szinZ,const double *X,const double *Y,const double *Z, float* dataout,
 //#endif
 
   //mexPrintf("ii: %d %d %d %d %d\n",ii,x,y,z,szl);
-  printf("ii: %d %d %d %d %d\n",ii,x,y,z,szl);
+  //printf("ii: %d %d %d %d %d\n",ii,x,y,z,szl);
 
   //if (z>szinZ-1)
   //{

@@ -215,6 +215,8 @@ void srhist_color(int sz, int zm, int size, float* xtot, float* ytot, float* tto
     free( tmpim );
   }
 
+  free(a);
+
   //free( xtmp );
   //free( ytmp );
 }

@@ -21,12 +21,11 @@ extern "C" {
 
 #include "Image.h"
 
-typedef double DoubleImage[253][253];
+#include <memory> // make_unique
 
 class SRscmos {
 
 private:
-  void findRegionsOfInterest(DoubleImage* unifim, int total_frames, bool(*im_max)[253][253]);
   Image<double>* varunif(Image<double> *tmp1, NoiseMap* nm);
 
 public:
@@ -43,58 +42,77 @@ public:
   double* maxprojim;
   double* sumim;
 
-  int total_size;
-  int imsz;
+//  std::unique_ptr<float []> imtot;
+//  std::unique_ptr<float []> xtot;
+//  std::unique_ptr<float []> ytot;
+//  std::unique_ptr<float []> ztot;
+//  std::unique_ptr<float []> bgtot;
+//  std::unique_ptr<float []> lltot;
+//  std::unique_ptr<float []> photot;
+//  std::unique_ptr<float []> crlbxtot;
+//  std::unique_ptr<float []> crlbytot;
+//
+//  std::unique_ptr<double []> maxprojim;
+//  std::unique_ptr<double []> sumim;
+
+  uint32_t total_size;
+  uint32_t imsz;
   
   double zm;
-  int imszzm;
+  uint32_t imszzm;
 
   // Fit Parameters
-  int min_photon;
+  uint32_t min_photon;
   float PSFSigma;
-  int zm_color;
+  uint32_t zm_color;
   float SRImage_pixelsize;
 
   // Thresholding
-  int ll_threshold;
-  int subregion_cropx;
-  int subregion_cropy;
-  int N_photon_min;
-  int N_photon_max;
+  uint32_t ll_threshold;
+  uint32_t subregion_cropx;
+  uint32_t subregion_cropy;
+  uint32_t N_photon_min;
+  uint32_t N_photon_max;
   float loc_uncer_min;
   float loc_uncer_max;
 
   uint32_t input_data_width;
 
   SRscmos();
+  SRscmos(const SRscmos &s);
   ~SRscmos();
 
   // sets the fit parameters
-  void setFitParameters(int min_photon, float PSFSigma, int zm_color, float SRImage_pixelsize);
+  void setFitParameters(uint32_t min_photon, float PSFSigma, uint32_t zm_color, float SRImage_pixelsize);
 
   // sets the threshold values
-  void setThresholds( int ll_threshold, int subregion_cropx, int subregion_cropy, int N_photon_min, int N_photon_max, float loc_uncer_min, float loc_uncer_max);
+  void setThresholds( uint32_t ll_threshold, uint32_t subregion_cropx, uint32_t subregion_cropy, uint32_t N_photon_min, uint32_t N_photon_max, float loc_uncer_min, float loc_uncer_max);
 
   // runs FPALM analysis on a given dataset
-  void run(NoiseMap* nm, Image<uint16_t> *frame_stack, int num_dataset);
-
-  // runs FPALM analysis on a given dataset
-//  void run(NoiseMap* nm, Frame256x256* images, int num_dataset, int total_frames);
+  void run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_dataset);
 
   // saves reconstruction image to output folder 
   void saveData(const char* output_file_path);
 
-  // merges data between two SRscmos objects
-  void mergeData(float* cp_imtot, float* cp_xtot, float* cp_ytot, float* cp_ztot, float* cp_bgtot, float* cp_lltot, float* cp_photot, float* cp_crlbxtot, float* cp_crlbytot, double* cp_maxprojim, double* cp_sumim, int cp_total_size, int num_dataset, int total_frames, int remaining_frames);
+  // maps data between two SRscmos objects
+  void mapData(const SRscmos &local_data, uint32_t num_dataset, uint32_t frames_per_worker_fixed, uint32_t remaining_frames);
 
-  // merges data between two SRscmos objects
-  void mergeData(float* imtot, float* xtot, float* ytot, float* ztot, float* bgtot, float* lltot, float* photot, float* crlbxtot, float* crlbytot, double* maxprojim, double* sumim, int cp_total_size, int num_dataset, int total_frames, int remaining_frames, int number_of_iterations);
+  void mergeData(float* cp_imtot, float* cp_xtot, float* cp_ytot, float* cp_ztot, float* cp_bgtot, float* cp_lltot, float* cp_photot, float* cp_crlbxtot, float* cp_crlbytot, double* cp_maxprojim, double* cp_sumim, uint32_t cp_total_size, uint32_t num_dataset, uint32_t total_frames, uint32_t remaining_frames, uint32_t data_width);
 
   // saves data to Matlab data file
   const std::string &inversegain_path = "./noise_map/la-gainmap.mat";
 
-  void writeMatFile(const std::string &gain_path, const std::string &var_path, const std::string &input_path, const std::string &output_path, int total_frames);
+  void writeMatFile(const std::string &gain_path, const std::string &var_path, const std::string &input_path, const std::string &output_path, uint32_t total_frames);
 
+//  // useful for debugging an instance of SRscmos
+//  friend std::ostream& operator<<(std::ostream &out, const SRscmos& sr) {
+//    out << "total_size: " << sr.total_size;
+//    //out << std::setfill(' ') << std::dec << std::setw(7) << cl.index;
+//
+//    //out << std::hex << setfill(' ') << std::setw(4+(int)(ceil((double)cl.tag_bits/4))) << showbase << cl.tag;
+//    out << std::endl;
+//    return out;
+//  }
 };
 
 #endif
