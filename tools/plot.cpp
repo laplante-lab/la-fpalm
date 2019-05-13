@@ -399,27 +399,24 @@ void plot( const char* output_path, SRscmos *sr ) {
 
   std::string plot_output = output_path;
 
-  std::string bg_path = plot_output + "bg.png";
+  std::string bg_path = plot_output + "_bg.png";
 
   struct fe_data *bg_data = (struct fe_data *)malloc( sizeof(*bg_data) );
   bg_data->output_file_path = bg_path.c_str();
-  //bg_data->output_file_path = "output/bg.png";
   bg_data->data = sr->bgtot;
   bg_data->size = sr->total_size;
 
-  std::string pho_path = plot_output + "pho.png";
+  std::string pho_path = plot_output + "_pho.png";
 
   struct fe_data *pho_data = (struct fe_data *)malloc( sizeof(*pho_data) );
   pho_data->output_file_path = pho_path.c_str();
-  //pho_data->output_file_path = "output/pho.png";
   pho_data->data = sr->photot;
   pho_data->size = sr->total_size;
 
-  std::string im_path = plot_output + "im.png";
+  std::string im_path = plot_output + "_im.png";
 
   struct im_data *implot_data = (struct im_data *) malloc( sizeof(*implot_data) );
   implot_data->output_file_path = im_path.c_str();
-  //implot_data->output_file_path = "output/im.png";
   implot_data->xtot = sr->xtot;
   implot_data->ytot = sr->ytot;
   implot_data->bgtot = sr->bgtot;
@@ -428,11 +425,10 @@ void plot( const char* output_path, SRscmos *sr ) {
   implot_data->lltot = sr->lltot;
   implot_data->size = sr->total_size;
 
-  std::string crlb_path = plot_output + "crlb.png";
+  std::string crlb_path = plot_output + "_crlb.png";
   
   struct un_data *cer_data = (struct un_data *) malloc( sizeof(*cer_data) );
   cer_data->output_file_path = crlb_path.c_str();
-  //cer_data->output_file_path = "output/crlb.png";
   cer_data->crlbxtot = sr->crlbxtot;
   cer_data->crlbytot = sr->crlbytot;
   cer_data->size = sr->total_size;

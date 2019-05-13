@@ -1,8 +1,8 @@
 /**
 *  @file    DataIO.cpp
 *  @author  John Ravi (jjravi)
-*  @date    6/12/2018
-*  @version 2.0
+*  @date    5/13/2019
+*  @version 2.2
 *
 *  @brief Allow for parsing data from .nd2 files
 *
@@ -77,6 +77,12 @@ DataIO::DataIO(const std::string &data_path) {
     default:
       break;
   }
+
+  // remember the file name without extension
+  file_name_noext = getFileName();
+  file_name_noext.erase(file_name_noext.end() - getFileExtension().length(), 
+                          file_name_noext.end());
+
 }
 
 DataIO::~DataIO() {
@@ -91,6 +97,19 @@ DataIO::~DataIO() {
     default:
       break;
   }
+}
+
+int DataIO::getNumChannels() {
+  int num_channels = ((int)jAttributes["componentCount"]); 
+  return num_channels;
+}
+
+std::string DataIO::getFileName() {
+  return fs::path(this->data_path).filename();
+}
+
+std::string DataIO::getFileExtension() {
+  return fs::path(this->data_path).extension();
 }
 
 std::vector <std::string> DataIO::read_directory(const std::string& path = std::string()) {
@@ -177,6 +196,90 @@ Image<uint16_t>* DataIO::parseImageData(uint32_t start_frame, uint32_t end_frame
   return frame_stack;
 }
 
+string simplifyString(string text) {
+  for(uint32_t i = 0; i < text.length(); i++) {
+    if(text[i] == ' ' || text[i] == '/') {
+      text[i] = '_';
+    }
+  }
+
+  return text;
+}
+
+std::string DataIO::getChannelName(uint32_t channel_index) {
+  LIMSTR mdstr = Lim_FileGetMetadata(handle);
+  json mdAttributes = json::parse(mdstr);
+  //std::cout << (mdstr ? mdstr : "N/A") << std::endl;
+  
+  std::string channel_name = simplifyString(mdAttributes["channels"][channel_index]["channel"]["name"]);
+  return channel_name;
+
+}
+
+Image<uint16_t>* DataIO::parseImageData(uint32_t start_frame, uint32_t end_frame, uint32_t channel) {
+  uint32_t subset_size = end_frame - start_frame;
+  Image<uint16_t> *frame_stack = new Image<uint16_t>( subset_size, this->frame_height, this->frame_width ); 
+
+  switch (input_format) {
+    case ND2:
+      {
+        LIMPICTURE pPicture;
+        Lim_InitPicture( &pPicture, jAttributes["widthPx"], jAttributes["heightPx"], jAttributes["bitsPerComponentSignificant"], jAttributes["bitsPerComponentInMemory"] ); 
+
+        uint32_t num_channels = ((int)jAttributes["componentCount"]); 
+        //LIMSTR out = Lim_FileGetAttributes(handle);
+
+
+        for (uint32_t i = start_frame, ii = 0; i < end_frame; i++, ii++) {
+          // get single image data at index i from nd2 file
+          Lim_FileGetImageData(handle, i, &pPicture);
+
+///////// only works for single channel /////////////////
+          // convert to uint16 2d array
+          //uint16_t *pixels = (uint16_t*) pPicture.pImageData;
+
+          //for( uint32_t j = 0; j < this->frame_height; j++ )
+          //  for( uint32_t k = 0; k < this->frame_width; k++ )
+          //    (*frame_stack)[std::make_tuple(ii, j, k)] = pixels[j*pPicture.uiWidth + k];
+
+          if ( num_channels == 1 ) {
+            // this line of code is equivalent to the commented nested for loop above
+            memcpy( frame_stack->pixels + ii*frame_stack->width*frame_stack->height, 
+                     pPicture.pImageData, this->frame_height*this->frame_width*sizeof(uint16_t) ); 
+          }
+
+///////// works for multi channel /////////////////
+
+          else {
+            // convert to uint16 2d array
+            uint16_t *pixels = (uint16_t*) pPicture.pImageData;
+            for( uint32_t j = 0; j < this->frame_height; j++ ) {
+              for( uint32_t k = 0; k < this->frame_width; k++ ) {
+                (*frame_stack)[std::make_tuple(ii, j, k)] = pixels[j*pPicture.uiWidth*num_channels + k*num_channels + channel];
+              }
+            }
+          }
+        }
+        Lim_DestroyPicture(&pPicture);
+      }
+      break;
+    case TIF:
+      break;
+    default:
+      break;
+  }
+
+//  //printf("john: %u\n", (int)jAttributes["componentCount"]);
+//  for( int i = 0; i < 10; i++ ) {
+//    for( int j = 0; j < 10; j++ ) {
+//      printf("%3d ", (*frame_stack)[std::make_tuple(0, i, j)]);
+//    }
+//    printf("\n");
+//  }
+//  exit(0);
+
+  return frame_stack;
+}
 
 /*
  * This routine writes an RGB TIFF image to "filename" scanline by scanline.

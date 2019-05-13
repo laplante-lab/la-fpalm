@@ -157,7 +157,7 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
     mapbase = (nm->gain_map->height - frame_stack->height)/2;
   }
 
-  printf("mapbase: %d\n", mapbase);
+  //printf("mapbase: %d\n", mapbase);
 
   for (uint32_t i = 0; i < frame_stack->num_frames; i++)
     for (uint32_t j = 0; j < frame_stack->height; j++)
@@ -249,7 +249,7 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
 
   free(kernel);
 
-  printf("convolution done\n");
+  //printf("convolution done\n");
 
   for (uint32_t i = 0; i < unifim->num_frames; i++)
     for (uint32_t j = 0; j < unifim->height; j++)
@@ -290,7 +290,7 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
 
   delete unifim;
 
-  printf("dilation done\n");
+  //printf("dilation done\n");
 
   //////////////////
   double *a = (double *)malloc(sizeof(double));
@@ -312,7 +312,7 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
 
   uint32_t imsz = im_max->width;
 
-  printf("num_regions: %d\n", num_regions);
+  //printf("num_regions: %d\n", num_regions);
 
   for (uint32_t i = 0; i < num_regions; i++) {
     z[i] = floor(a[i] / im_max->height / im_max->width);
@@ -496,7 +496,7 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
   //// Reconstruction /////
   double maxblob = 100000;
   uint32_t maxk = (uint32_t)ceil(new_size / maxblob);
-  printf("maxk:%d\n", maxk);
+  //printf("maxk:%d\n", maxk);
  
   ////////CONTINUE/////////
   float *xresult2, *yresult2;
