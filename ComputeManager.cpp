@@ -59,9 +59,7 @@ void ComputeManager::compute(const std::string &data_path, const std::string &ou
   for( int channel_index = 0; channel_index < input->getNumChannels(); channel_index++ ) {
 
     std::string channel_name = input->getChannelName(channel_index).c_str();
-
     printf("Analyzing channel(%d): %s\n", channel_index, channel_name.c_str());
-
     std::string channel_output_path = output_path + "/" + channel_name;
 
     // range of frames to analyze
