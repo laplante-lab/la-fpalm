@@ -148,7 +148,7 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
   ///////////////
 
   // This applies the noise filter to the input images
-  Image<double> *fin = new Image<double>( frame_stack->num_frames, frame_stack->height, frame_stack->width ); 
+  Image<double> *fin = new Image<double>( frame_stack->num_frames, frame_stack->height, frame_stack->width );
 
   uint32_t mapbase = 0;
 
@@ -162,12 +162,12 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
   for (uint32_t i = 0; i < frame_stack->num_frames; i++)
     for (uint32_t j = 0; j < frame_stack->height; j++)
       for (uint32_t k = 0; k < frame_stack->width; k++)
-        (*fin)[std::make_tuple(i, j, k)] = ((double)(*frame_stack)[std::make_tuple(i, j, k)] - 
+        (*fin)[std::make_tuple(i, j, k)] = ((double)(*frame_stack)[std::make_tuple(i, j, k)] -
                       (*nm->o_map)[{k+mapbase, j+mapbase}])/ (*nm->gain_map)[{k+mapbase,j+mapbase}];
 
 
-  Image<float> *fcin = new Image<float>( frame_stack->num_frames, frame_stack->height-3, frame_stack->width-3 ); 
-  Image<double> *tmp1 = new Image<double>( frame_stack->num_frames, frame_stack->height-3, frame_stack->width-3 ); 
+  Image<float> *fcin = new Image<float>( frame_stack->num_frames, frame_stack->height-3, frame_stack->width-3 );
+  Image<double> *tmp1 = new Image<double>( frame_stack->num_frames, frame_stack->height-3, frame_stack->width-3 );
 
   for (uint32_t i = 0; i < fin->num_frames; i++)
     for (uint32_t j = 0; j < fin->height-3; j++)
@@ -188,9 +188,9 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
   }
 
   ///////// 2D convolution kernel size 3x3 /////////////
-  Image<double> *cim = new Image<double>(tmp1->num_frames, tmp1->height, tmp1->width); 
+  Image<double> *cim = new Image<double>(tmp1->num_frames, tmp1->height, tmp1->width);
   for (uint32_t i = 0; i < tmp1->num_frames; i++) {
-    convolve2DSeparable( (tmp1->pixels + i*tmp1->width*tmp1->height), 
+    convolve2DSeparable( (tmp1->pixels + i*tmp1->width*tmp1->height),
                          (cim->pixels + i*cim->width*cim->height), tmp1->height, tmp1->width,
                          kernel, 3, kernel, 3);
   }
@@ -203,7 +203,7 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
 
   Image<double> *wim = new Image<double>(vv->num_frames, vv->height, vv->width);
   for (uint32_t i = 0; i < wim->num_frames; i++)
-    convolve2DSeparable( (vv->pixels + i*vv->width*vv->height), 
+    convolve2DSeparable( (vv->pixels + i*vv->width*vv->height),
                          (wim->pixels + i*wim->width*wim->height), wim->height, wim->width,
                          kernel, 3, kernel, 3);
 
@@ -216,7 +216,7 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
 
   /////////// 2D convolution kernel size 9x9 ///////////////
   for (uint32_t i = 0; i < tmp1->num_frames; i++) {
-    convolve2DSeparable( (tmp1->pixels + i*tmp1->width*tmp1->height), 
+    convolve2DSeparable( (tmp1->pixels + i*tmp1->width*tmp1->height),
                          (cim->pixels + i*cim->width*cim->height), tmp1->height, tmp1->width,
                          kernel, 9, kernel, 9);
   }
@@ -224,7 +224,7 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
   delete tmp1;
 
   for (uint32_t i = 0; i < vv->num_frames; i++) {
-    convolve2DSeparable( (vv->pixels + i*vv->width*vv->height), 
+    convolve2DSeparable( (vv->pixels + i*vv->width*vv->height),
                          (wim->pixels + i*wim->width*wim->height), vv->height, vv->width,
                          kernel, 9, kernel, 9);
   }
@@ -280,9 +280,9 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
 
     dip::Image out;
     dip::Dilation(img, out, { { 5,5 }, "rectangular" }, { "add min" });
-    
+
     double *maxf = (double *)(out.Data());
- 
+
     for (uint32_t i = 0; i < im_max->height; i++)
       for (uint32_t j = 0; j < im_max->width; j++)
         (*im_max)[std::make_tuple(ii,i,j)] = ((*unifim)[std::make_tuple(ii,i,j)] >= 0.999*maxf[i*im_max->width + j]) && ((*unifim)[std::make_tuple(ii,i,j)] > thresh);
@@ -294,7 +294,7 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
 
   //////////////////
   double *a = (double *)malloc(sizeof(double));
-  
+
   uint32_t num_regions = 0;
 
   for (uint32_t it = 0; it < im_max->num_frames; it++)
@@ -363,7 +363,7 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
 
   auto t2 = std::make_unique<float[]>(num_regions);
   auto l2 = std::make_unique<float[]>(num_regions);
-  
+
   Image<float> *varmap_cut = new Image<float>(fcin->num_frames, fcin->height, fcin->width);
   Image<float> *gainmap_cut = new Image<float>(fcin->num_frames, fcin->height, fcin->width);
 
@@ -378,14 +378,14 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
 
   auto tmp_l = std::make_unique<float[]>(num_regions);
   auto tmp_t = std::make_unique<float[]>(num_regions);
- 
+
   float *subvarim = cMakeSubregions(x.get(), y.get(), z.get(), num_regions, FIT_BOX_SIZE, varmap_cut->pixels, tmp_l.get(), tmp_t.get(), fcin->height, fcin->width, fcin->num_frames);
   float *subgainim = cMakeSubregions(x.get(), y.get(), z.get(), num_regions, FIT_BOX_SIZE, gainmap_cut->pixels, tmp_l.get(), tmp_t.get(), fcin->height, fcin->width, fcin->num_frames);
 
   delete varmap_cut;
   delete gainmap_cut;
 
-  // find the lowres max 
+  // find the lowres max
   for (uint32_t i = 0; i < fcin->num_frames; i++)
     for (uint32_t j = 0; j < fcin->height; j++)
       for (uint32_t k = 0; k < fcin->width; k++) {
@@ -405,209 +405,211 @@ void SRscmos::run(NoiseMap* nm, Image<uint16_t> *frame_stack, uint32_t num_datas
 
   //////// SCMOS fit ///////
   printf("floats size: %d\n", num_regions);
+  if( num_regions != 0 ) {
 
-  auto sub_x = std::make_unique<float[]>(num_regions);
-  auto sub_y = std::make_unique<float[]>(num_regions);
-  auto sub_photon = std::make_unique<float[]>(num_regions);
-  auto sub_background = std::make_unique<float[]>(num_regions);
-  auto CRLB2 = std::make_unique<float[]>(4*num_regions);
-  auto LL2 = std::make_unique<float[]>(num_regions);
+    auto sub_x = std::make_unique<float[]>(num_regions);
+    auto sub_y = std::make_unique<float[]>(num_regions);
+    auto sub_photon = std::make_unique<float[]>(num_regions);
+    auto sub_background = std::make_unique<float[]>(num_regions);
+    auto CRLB2 = std::make_unique<float[]>(4*num_regions);
+    auto LL2 = std::make_unique<float[]>(num_regions);
 
-  printf("PSFSigma: %0.4lf, num_dataset: %d \n", PSFSigma, num_dataset);
+    printf("PSFSigma: %0.4lf, num_dataset: %d \n", PSFSigma, num_dataset);
 
-  SRsCMOS_MLE(num_dataset, num_regions, (float *)subregion, (float *)subvarim, (float *)subgainim, FIT_TYPE, PSFSigma, ITERATIONS, sub_x.get(), sub_y.get(), sub_photon.get(), sub_background.get(), CRLB2.get(), LL2.get());
+    SRsCMOS_MLE(num_dataset, num_regions, (float *)subregion, (float *)subvarim, (float *)subgainim, FIT_TYPE, PSFSigma, ITERATIONS, sub_x.get(), sub_y.get(), sub_photon.get(), sub_background.get(), CRLB2.get(), LL2.get());
 
-  free(subregion);
-  free(subvarim);
-  free(subgainim);
+    free(subregion);
+    free(subvarim);
+    free(subgainim);
 
-  printf("finished GPU, %d\n", num_dataset);
+    printf("finished GPU, %d\n", num_dataset);
 
-  auto llmask2 = std::make_unique<bool[]>(num_regions);
-  auto xymask = std::make_unique<bool[]>(num_regions);
-  auto intmask = std::make_unique<bool[]>(num_regions);
+    auto llmask2 = std::make_unique<bool[]>(num_regions);
+    auto xymask = std::make_unique<bool[]>(num_regions);
+    auto intmask = std::make_unique<bool[]>(num_regions);
 
-  for (uint32_t i = 0; i < num_regions; i++)
-    llmask2[i] = (LL2[i] * (-2)) > ll_threshold;
+    for (uint32_t i = 0; i < num_regions; i++)
+      llmask2[i] = (LL2[i] * (-2)) > ll_threshold;
 
-  for (uint32_t i = 0; i < num_regions; i++)
-    xymask[i] = (sub_x[i] >(FIT_BOX_SIZE - subregion_cropx - 1)) || (sub_x[i] < subregion_cropx) || (sub_y[i] > (FIT_BOX_SIZE - subregion_cropx - 1)) || (sub_y[i] < subregion_cropx);
+    for (uint32_t i = 0; i < num_regions; i++)
+      xymask[i] = (sub_x[i] >(FIT_BOX_SIZE - subregion_cropx - 1)) || (sub_x[i] < subregion_cropx) || (sub_y[i] > (FIT_BOX_SIZE - subregion_cropx - 1)) || (sub_y[i] < subregion_cropx);
 
-  for (uint32_t i = 0; i < num_regions; i++)
-    intmask[i] = (sub_photon[i] < N_photon_min) || (sub_photon[i] > N_photon_max);
+    for (uint32_t i = 0; i < num_regions; i++)
+      intmask[i] = (sub_photon[i] < N_photon_min) || (sub_photon[i] > N_photon_max);
 
-  auto uncermask = std::make_unique<bool[]>(num_regions);
+    auto uncermask = std::make_unique<bool[]>(num_regions);
 
-  for (uint32_t i = 0; i < num_regions; i++)
-    uncermask[i] = (sqrt(CRLB2[i + 1 * num_regions]) < loc_uncer_min) || (sqrt(CRLB2[i + 0 * num_regions]) > loc_uncer_max);
+    for (uint32_t i = 0; i < num_regions; i++)
+      uncermask[i] = (sqrt(CRLB2[i + 1 * num_regions]) < loc_uncer_min) || (sqrt(CRLB2[i + 0 * num_regions]) > loc_uncer_max);
 
-  auto totmask = std::make_unique<bool[]>(num_regions);
+    auto totmask = std::make_unique<bool[]>(num_regions);
 
-  uint32_t mask_size = 0;
-  for (uint32_t i = 0; i < num_regions; i++) {
-    totmask[i] = llmask2[i] || xymask[i] || intmask[i] || uncermask[i];
+    uint32_t mask_size = 0;
+    for (uint32_t i = 0; i < num_regions; i++) {
+      totmask[i] = llmask2[i] || xymask[i] || intmask[i] || uncermask[i];
 
-    if (!totmask[i])
-      mask_size++;
-  }
-
-  uint32_t new_size = mask_size;
-  printf("new_size: %d\n", new_size);
-
-  auto mask_sub_x = std::make_unique<float[]>(new_size);
-  auto mask_sub_y = std::make_unique<float[]>(new_size);
-  auto mask_sub_photon = std::make_unique<float[]>(new_size);
-  auto mask_sub_background = std::make_unique<float[]>(new_size);
-  auto mask_CRLB2 = std::make_unique<float[]>(4*new_size);
-  auto mask_l2 = std::make_unique<float[]>(new_size);
-  auto mask_t2 = std::make_unique<float[]>(new_size);
-  auto mask_z = std::make_unique<double[]>(new_size);
-  auto mask_LL2 = std::make_unique<float[]>(new_size);
-
-  uint32_t indexer = 0;
-  for (uint32_t i = 0; i < num_regions; i++) {
-    if (!totmask[i]) {
-      mask_sub_x[indexer] = sub_x[i];
-      mask_sub_y[indexer] = sub_y[i];
-      mask_sub_photon[indexer] = sub_photon[i];
-      mask_sub_background[indexer] = sub_background[i];
-      for (uint32_t j = 0; j < 4; j++)
-        mask_CRLB2[indexer + j*new_size] = CRLB2[i + j*num_regions];
-      mask_l2[indexer] = (float)l2[i];
-      mask_t2[indexer] = t2[i];
-      mask_z[indexer] = z[i];
-      mask_LL2[indexer] = LL2[i];
-
-      indexer++;
-    }
-  }
-
-  sub_x = std::move(mask_sub_x);
-  sub_y = std::move(mask_sub_y);
-  sub_photon = std::move(mask_sub_photon);
-  sub_background = std::move(mask_sub_background);
-  CRLB2 = std::move(mask_CRLB2);
-  l2 = std::move(mask_l2);
-  t2 = std::move(mask_t2);
-  z = std::move(mask_z);
-  LL2 = std::move(mask_LL2);
-  
-  //printf("start reconstruction\n");
-  //// Reconstruction /////
-  double maxblob = 100000;
-  uint32_t maxk = (uint32_t)ceil(new_size / maxblob);
-  //printf("maxk:%d\n", maxk);
- 
-  ////////CONTINUE/////////
-  float *xresult2, *yresult2;
-
-  float* xtmp = (float*)malloc(sizeof(float));
-  float* ytmp = (float*)malloc(sizeof(float));
-  uint32_t xy_tmp_size = 0;
-
-  /////// Parse data /////////////////
-  for (uint32_t ii = 0; ii < maxk; ii++) {
-    uint32_t bst = (ii)*maxblob + 1;
-    //printf("bst: %d\n", bst);
-
-    uint32_t bed;
-
-    if (ii == (maxk - 1))
-      bed = new_size;
-    else
-      bed = ii * maxblob;
-
-    xresult2 = (float *)malloc((bed - bst + 1) * sizeof(float));
-    yresult2 = (float *)malloc((bed - bst + 1) * sizeof(float));
- 
-    uint32_t indx = 0;
-    for (uint32_t i = bst - 1; i < bed; i++) {
-      xresult2[indx] = sub_y[i] + l2[i];
-      yresult2[indx++] = sub_x[i] + t2[i];
+      if (!totmask[i])
+        mask_size++;
     }
 
-    //printf("bed-bst: %d\n", (bed-bst+1));
-    //printf("indx: %d\n", indx);
-    //printf("imszzm: %d\n", imszzm);
+    uint32_t new_size = mask_size;
+    printf("new_size: %d\n", new_size);
 
-    float* tempx = (float*)malloc((bed - bst + 1) * sizeof(float));
-    float* tempy = (float*)malloc((bed - bst + 1) * sizeof(float));
-  
-    for (uint32_t i = 0; i < indx; i++) {
-      tempx[i] = xresult2[i] * zm;
-      tempy[i] = yresult2[i] * zm;
+    auto mask_sub_x = std::make_unique<float[]>(new_size);
+    auto mask_sub_y = std::make_unique<float[]>(new_size);
+    auto mask_sub_photon = std::make_unique<float[]>(new_size);
+    auto mask_sub_background = std::make_unique<float[]>(new_size);
+    auto mask_CRLB2 = std::make_unique<float[]>(4*new_size);
+    auto mask_l2 = std::make_unique<float[]>(new_size);
+    auto mask_t2 = std::make_unique<float[]>(new_size);
+    auto mask_z = std::make_unique<double[]>(new_size);
+    auto mask_LL2 = std::make_unique<float[]>(new_size);
+
+    uint32_t indexer = 0;
+    for (uint32_t i = 0; i < num_regions; i++) {
+      if (!totmask[i]) {
+        mask_sub_x[indexer] = sub_x[i];
+        mask_sub_y[indexer] = sub_y[i];
+        mask_sub_photon[indexer] = sub_photon[i];
+        mask_sub_background[indexer] = sub_background[i];
+        for (uint32_t j = 0; j < 4; j++)
+          mask_CRLB2[indexer + j*new_size] = CRLB2[i + j*num_regions];
+        mask_l2[indexer] = (float)l2[i];
+        mask_t2[indexer] = t2[i];
+        mask_z[indexer] = z[i];
+        mask_LL2[indexer] = LL2[i];
+
+        indexer++;
+      }
     }
-  
-    xy_tmp_size = xy_tmp_size + indx;
-    xtmp = (float*)realloc(xtmp, xy_tmp_size * sizeof(float));
-    ytmp = (float*)realloc(ytmp, xy_tmp_size * sizeof(float));
-  
-    uint16_t *im2 = cHistRecon(imszzm, imszzm, indx, tempx, tempy, 1);
- 
-    for (uint32_t i = 0; i < imszzm; i++)
-      for (uint32_t j = 0; j < imszzm; j++)
-        imtot[i*imszzm + j] = imtot[i*imszzm + j] + im2[i*imszzm + j];
 
-    memcpy((void*)(xtmp + xy_tmp_size - indx), (void*)xresult2, (indx) * sizeof(float));
-    memcpy((void*)(ytmp + xy_tmp_size - indx), (void*)yresult2, (indx) * sizeof(float));
+    sub_x = std::move(mask_sub_x);
+    sub_y = std::move(mask_sub_y);
+    sub_photon = std::move(mask_sub_photon);
+    sub_background = std::move(mask_sub_background);
+    CRLB2 = std::move(mask_CRLB2);
+    l2 = std::move(mask_l2);
+    t2 = std::move(mask_t2);
+    z = std::move(mask_z);
+    LL2 = std::move(mask_LL2);
 
-    free(im2);
+    //printf("start reconstruction\n");
+    //// Reconstruction /////
+    double maxblob = 100000;
+    uint32_t maxk = (uint32_t)ceil(new_size / maxblob);
+    //printf("maxk:%d\n", maxk);
 
-    free(tempx);
-    free(tempy);
+    ////////CONTINUE/////////
+    float *xresult2, *yresult2;
 
-    free(xresult2);
-    free(yresult2);
+    float* xtmp = (float*)malloc(sizeof(float));
+    float* ytmp = (float*)malloc(sizeof(float));
+    uint32_t xy_tmp_size = 0;
+
+    /////// Parse data /////////////////
+    for (uint32_t ii = 0; ii < maxk; ii++) {
+      uint32_t bst = (ii)*maxblob + 1;
+      //printf("bst: %d\n", bst);
+
+      uint32_t bed;
+
+      if (ii == (maxk - 1))
+        bed = new_size;
+      else
+        bed = ii * maxblob;
+
+      xresult2 = (float *)malloc((bed - bst + 1) * sizeof(float));
+      yresult2 = (float *)malloc((bed - bst + 1) * sizeof(float));
+
+      uint32_t indx = 0;
+      for (uint32_t i = bst - 1; i < bed; i++) {
+        xresult2[indx] = sub_y[i] + l2[i];
+        yresult2[indx++] = sub_x[i] + t2[i];
+      }
+
+      //printf("bed-bst: %d\n", (bed-bst+1));
+      //printf("indx: %d\n", indx);
+      //printf("imszzm: %d\n", imszzm);
+
+      float* tempx = (float*)malloc((bed - bst + 1) * sizeof(float));
+      float* tempy = (float*)malloc((bed - bst + 1) * sizeof(float));
+
+      for (uint32_t i = 0; i < indx; i++) {
+        tempx[i] = xresult2[i] * zm;
+        tempy[i] = yresult2[i] * zm;
+      }
+
+      xy_tmp_size = xy_tmp_size + indx;
+      xtmp = (float*)realloc(xtmp, xy_tmp_size * sizeof(float));
+      ytmp = (float*)realloc(ytmp, xy_tmp_size * sizeof(float));
+
+      uint16_t *im2 = cHistRecon(imszzm, imszzm, indx, tempx, tempy, 1);
+
+      for (uint32_t i = 0; i < imszzm; i++)
+        for (uint32_t j = 0; j < imszzm; j++)
+          imtot[i*imszzm + j] = imtot[i*imszzm + j] + im2[i*imszzm + j];
+
+      memcpy((void*)(xtmp + xy_tmp_size - indx), (void*)xresult2, (indx) * sizeof(float));
+      memcpy((void*)(ytmp + xy_tmp_size - indx), (void*)yresult2, (indx) * sizeof(float));
+
+      free(im2);
+
+      free(tempx);
+      free(tempy);
+
+      free(xresult2);
+      free(yresult2);
+    }
+
+    // append results to previous data
+    total_size = total_size + xy_tmp_size;
+
+    //TODO: can be optimized
+    xtot = (float *)realloc(xtot, total_size * sizeof(float));
+    ytot = (float *)realloc(ytot, total_size * sizeof(float));
+    ztot = (float *)realloc(ztot, total_size * sizeof(float));
+
+    bgtot = (float *)realloc(bgtot, total_size * sizeof(float));
+    lltot = (float *)realloc(lltot, total_size * sizeof(float));
+    photot = (float *)realloc(photot, total_size * sizeof(float));
+    crlbxtot = (float *)realloc(crlbxtot, total_size * sizeof(float));
+    crlbytot = (float *)realloc(crlbytot, total_size * sizeof(float));
+
+  //  xtot = std::make_unique<float []>(total_size);
+  //  ytot = std::make_unique<float []>(total_size);
+  //  ztot = std::make_unique<float []>(total_size);
+  //
+  //  bgtot = std::make_unique<float []>(total_size);
+  //  lltot = std::make_unique<float []>(total_size);
+  //  photot = std::make_unique<float []>(total_size);
+  //  crlbxtot = std::make_unique<float []>(total_size);
+  //  crlbytot = std::make_unique<float []>(total_size);
+
+    printf("size:\t %d --- %d \n", total_size - xy_tmp_size, total_size);
+
+    uint32_t j = total_size - xy_tmp_size;
+    for (uint32_t i = 0; i < xy_tmp_size; i++, j++) {
+      xtot[j] = xtmp[i];
+      ytot[j] = ytmp[i];
+      ztot[j] = z[i];
+      //ztot[j] = z[i] + total_frames*num_dataset + 1;
+      //ztot[j] = z[i] + FRAMES*num_dataset + 1;
+
+      bgtot[j] = sub_background[i];
+      lltot[j] = -2 * LL2[i];
+      photot[j] = sub_photon[i];
+      crlbxtot[j] = sqrt(CRLB2[i + 0 * new_size]);
+      crlbytot[j] = sqrt(CRLB2[i + 1 * new_size]);
+    }
+
+    //printf("total_size: %d\n", total_size);
+
+    //clean up
+    //printf("clearing temp memory\n");
+
+    free(xtmp);
+    free(ytmp);
   }
-  
-  // append results to previous data
-  total_size = total_size + xy_tmp_size;
-
-  //TODO: can be optimized
-  xtot = (float *)realloc(xtot, total_size * sizeof(float));
-  ytot = (float *)realloc(ytot, total_size * sizeof(float));
-  ztot = (float *)realloc(ztot, total_size * sizeof(float));
-
-  bgtot = (float *)realloc(bgtot, total_size * sizeof(float));
-  lltot = (float *)realloc(lltot, total_size * sizeof(float));
-  photot = (float *)realloc(photot, total_size * sizeof(float));
-  crlbxtot = (float *)realloc(crlbxtot, total_size * sizeof(float));
-  crlbytot = (float *)realloc(crlbytot, total_size * sizeof(float));
-
-//  xtot = std::make_unique<float []>(total_size);
-//  ytot = std::make_unique<float []>(total_size);
-//  ztot = std::make_unique<float []>(total_size);
-//
-//  bgtot = std::make_unique<float []>(total_size);
-//  lltot = std::make_unique<float []>(total_size);
-//  photot = std::make_unique<float []>(total_size);
-//  crlbxtot = std::make_unique<float []>(total_size);
-//  crlbytot = std::make_unique<float []>(total_size);
-
-  printf("size:\t %d --- %d \n", total_size - xy_tmp_size, total_size);
-
-  uint32_t j = total_size - xy_tmp_size;
-  for (uint32_t i = 0; i < xy_tmp_size; i++, j++) {
-    xtot[j] = xtmp[i];
-    ytot[j] = ytmp[i];
-    ztot[j] = z[i];
-    //ztot[j] = z[i] + total_frames*num_dataset + 1;
-    //ztot[j] = z[i] + FRAMES*num_dataset + 1;
-
-    bgtot[j] = sub_background[i];
-    lltot[j] = -2 * LL2[i];
-    photot[j] = sub_photon[i];
-    crlbxtot[j] = sqrt(CRLB2[i + 0 * new_size]);
-    crlbytot[j] = sqrt(CRLB2[i + 1 * new_size]);
-  }
-
-  //printf("total_size: %d\n", total_size);
-
-  //clean up
-  //printf("clearing temp memory\n");
-
-  free(xtmp);
-  free(ytmp);
 }
 
 void SRscmos::saveData(const char* output_file_path) {
@@ -667,7 +669,7 @@ void SRscmos::saveData(const char* output_file_path) {
 
 void SRscmos::mapData(const SRscmos &local_data, uint32_t num_dataset, uint32_t frames_per_worker_fixed, uint32_t remaining_frames) {
 
-  // find the lowres max 
+  // find the lowres max
   for (uint32_t i = 0; i < this->imsz; i++)
     for (uint32_t j = 0; j < this->imsz; j++) {
       if (this->maxprojim[i * this->imsz + j] < local_data.maxprojim[i * local_data.imsz + j]) {
@@ -767,7 +769,7 @@ void SRscmos::mapData(const SRscmos &local_data, uint32_t num_dataset, uint32_t 
 //  sumim = std::make_unique<double[]>(imsz*imsz);
 //  /////
 //
-//  // find the lowres max 
+//  // find the lowres max
 //  for (uint32_t i = 0; i < imsz; i++)
 //    for (uint32_t j = 0; j < imsz; j++) {
 //      if (maxprojim[i * imsz + j] < cp_maxprojim[i * imsz + j]) {
@@ -900,7 +902,7 @@ void SRscmos::writeMatFile(const std::string &gain_path, const std::string &var_
   field = Mat_VarCreate("gain_cal_file", MAT_C_CHAR, MAT_T_UTF8, 2, dim, (char*)(gain_path.c_str()), 0);
   Mat_VarSetStructFieldByName(matvar, "gain_cal_file", 0, field);
 
-  // loc_x 
+  // loc_x
   field = Mat_VarCreate("loc_x", MAT_C_SINGLE, MAT_T_SINGLE, 2, dims, xtot, 0);
   Mat_VarSetStructFieldByName(matvar, "loc_x", 0, field);
 
@@ -908,23 +910,23 @@ void SRscmos::writeMatFile(const std::string &gain_path, const std::string &var_
   field = Mat_VarCreate("loc_y", MAT_C_SINGLE, MAT_T_SINGLE, 2, dims, ytot, 0);
   Mat_VarSetStructFieldByName(matvar, "loc_y", 0, field);
 
-  // loc_z 
+  // loc_z
   field = Mat_VarCreate("loc_z", MAT_C_SINGLE, MAT_T_SINGLE, 2, dims, ztot, 0);
   Mat_VarSetStructFieldByName(matvar, "loc_z", 0, field);
 
-  // loc_bg 
+  // loc_bg
   field = Mat_VarCreate("loc_bg", MAT_C_SINGLE, MAT_T_SINGLE, 2, dims, bgtot, 0);
   Mat_VarSetStructFieldByName(matvar, "loc_bg", 0, field);
 
-  // loc_photons 
+  // loc_photons
   field = Mat_VarCreate("loc_photons", MAT_C_SINGLE, MAT_T_SINGLE, 2, dims, photot, 0);
   Mat_VarSetStructFieldByName(matvar, "loc_photons", 0, field);
 
-  // loc_uncerx 
+  // loc_uncerx
   field = Mat_VarCreate("loc_uncerx", MAT_C_SINGLE, MAT_T_SINGLE, 2, dims, crlbxtot, 0);
   Mat_VarSetStructFieldByName(matvar, "loc_uncerx", 0, field);
 
-  // loc_uncerx 
+  // loc_uncerx
   field = Mat_VarCreate("loc_uncery", MAT_C_SINGLE, MAT_T_SINGLE, 2, dims, crlbytot, 0);
   Mat_VarSetStructFieldByName(matvar, "loc_uncery", 0, field);
 
@@ -948,7 +950,7 @@ void SRscmos::writeMatFile(const std::string &gain_path, const std::string &var_
   field = Mat_VarCreate("ystart", MAT_C_INT32, MAT_T_INT32, 2, dims2, &ystart, 0);
   Mat_VarSetStructFieldByName(matvar, "ystart", 0, field);
 
-  // startfrm 
+  // startfrm
   uint32_t startfrm = 1;
   field = Mat_VarCreate("startfrm", MAT_C_INT32, MAT_T_INT32, 2, dims2, &startfrm, 0);
   Mat_VarSetStructFieldByName(matvar, "startfrm", 0, field);
@@ -973,7 +975,7 @@ void SRscmos::writeMatFile(const std::string &gain_path, const std::string &var_
   field = Mat_VarCreate("iterations", MAT_C_INT32, MAT_T_INT32, 2, dims2, &iterations, 0);
   Mat_VarSetStructFieldByName(matvar, "iterations", 0, field);
 
-  // FitType 
+  // FitType
   uint32_t FitType = FIT_TYPE;
   field = Mat_VarCreate("FitType", MAT_C_INT32, MAT_T_INT32, 2, dims2, &FitType, 0);
   Mat_VarSetStructFieldByName(matvar, "FitType", 0, field);
@@ -1007,11 +1009,11 @@ void SRscmos::writeMatFile(const std::string &gain_path, const std::string &var_
   field = Mat_VarCreate("N_photon_max", MAT_C_INT32, MAT_T_INT32, 2, dims2, &(this->N_photon_max), 0);
   Mat_VarSetStructFieldByName(matvar, "N_photon_max", 0, field);
 
-  // loc_uncer_max 
+  // loc_uncer_max
   field = Mat_VarCreate("loc_uncer_max", MAT_C_SINGLE, MAT_T_SINGLE, 2, dims2, &(this->loc_uncer_max), 0);
   Mat_VarSetStructFieldByName(matvar, "loc_uncer_max", 0, field);
 
-  // loc_uncer_min 
+  // loc_uncer_min
   field = Mat_VarCreate("loc_uncer_min", MAT_C_SINGLE, MAT_T_SINGLE, 2, dims2, &(this->loc_uncer_min), 0);
   Mat_VarSetStructFieldByName(matvar, "loc_uncer_min", 0, field);
 

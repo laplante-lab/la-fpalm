@@ -53,6 +53,7 @@ void ComputeManager::compute(const std::string &data_path, const std::string &ou
 
   // create output folder if it does not exist
   if( createOutput( output_path ) != 0 ) {
+    printf("could not create output_path: %s\n", output_path.c_str());
     exit(EXIT_FAILURE);
   }
 
@@ -150,6 +151,7 @@ void ComputeManager::compute(const std::string &data_path, const std::string &ou
     }
 
     if( createOutput( channel_output_path ) != 0 ) {
+      printf("could not create output_path: %s\n", output_path.c_str());
       exit(EXIT_FAILURE);
     }
 
